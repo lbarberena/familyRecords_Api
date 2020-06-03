@@ -28,6 +28,10 @@ const MedicalRecordSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true
+    },
+    imageURI: {
+        type: String,
+        required: false
     }
 });
 
