@@ -59,7 +59,7 @@ router.post('/families', async(req, res) => {
         });
     });
 
-router.delete('/families/:userId/:userFamily/:id', verify, async (req, res) => {
+router.delete('/families/:userId/:userFamily/:id', verify, permissions, async (req, res) => {
     try {
         //Vaidation
         const family = await Family.findById(req.params.id);

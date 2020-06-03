@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const verify = require('../middlewares/verify-token.middleware');
 const permissions = require('../middlewares/permissions.middleware');
 
-router.get('/users/:userId/:userFamily', verify, (req, res) => {
+router.get('/users/:userId/:userFamily', verify, permissions, (req, res) => {
     try {
         if ( req.params.userFamily === 'all' ) {
             User.find({}, function(err, users) {
@@ -54,7 +54,7 @@ router.get('/users/:userId/:userFamily', verify, (req, res) => {
 });
 
 // GET USERS IN A FAMILY
-router.get('/users/:userId/:userFamily/:family', verify, (req, res) => {
+router.get('/users/:userId/:userFamily/:family', verify, permissions, (req, res) => {
     try {
         if ( req.params.userFamily === 'all' ) {
             User.find({}, function(err, users) {
@@ -105,7 +105,7 @@ router.get('/users/:userId/:userFamily/:family', verify, (req, res) => {
 });
 
 // GET USERS BY ID
-router.get('/users/:userId/:userFamily/:id', verify, (req, res) => {
+router.get('/users/:userId/:userFamily/:id', verify, permissions, (req, res) => {
     try {
         const user = User.findById(req.params.id);
         if (!user) {

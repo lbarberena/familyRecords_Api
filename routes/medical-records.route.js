@@ -5,7 +5,7 @@ const { check, validationResult } = require('express-validator');
 const permissions = require('../middlewares/permissions.middleware');
 
 // GET ALL MEDICAL RECORDS
-router.get('/medicalRecord/:userId/:userFamily', verify, (req, res) => {
+router.get('/medicalRecord/:userId/:userFamily', verify, permissions, (req, res) => {
     try {
         if ( req.params.userFamily === 'all' ) {
             MedicalRecord.find({}, function(err, medicalRecord) {
@@ -54,7 +54,7 @@ router.get('/medicalRecord/:userId/:userFamily', verify, (req, res) => {
 });
 
 // GET MY MEDICAL RECORDS
-router.get('/medicalRecord/:userId/:userFamily/mines', verify, async function(req, res) {
+router.get('/medicalRecord/:userId/:userFamily/mines', verify, permissions, async function(req, res) {
     try {
         MedicalRecord.aggregate([{
             $match: {
@@ -86,7 +86,7 @@ router.get('/medicalRecord/:userId/:userFamily/mines', verify, async function(re
 });
 
 //GET Medical Record using the ID
-router.get('/medicalRecord/:userId/:userFamily/:id', verify, async function(req, res) {
+router.get('/medicalRecord/:userId/:userFamily/:id', verify, permissions, async function(req, res) {
     try {
         const medicalRecord = await MedicalRecord.findById(req.params.id);
         if (!medicalRecord) {
@@ -125,7 +125,7 @@ router.get('/medicalRecord/:userId/:userFamily/:id', verify, async function(req,
     }
 });
 
-router.post('/medicalRecord/:userId/:userFamily', verify, async(req, res) => {
+router.post('/medicalRecord/:userId/:userFamily', verify, permissions, async(req, res) => {
 
         const medicalRecord = new MedicalRecord({
             recordName: req.body.recordName,
@@ -134,7 +134,8 @@ router.post('/medicalRecord/:userId/:userFamily', verify, async(req, res) => {
             quantity: req.body.quantity,
             userId: req.params.userId,
             family: req.params.userFamily,
-            username: req.body.username
+            username: req.body.username,
+            imageURI: req.body.imageURI
         });
         try {
             const savedMedicalRecord = await medicalRecord.save();

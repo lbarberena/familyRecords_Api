@@ -8,7 +8,6 @@ module.exports = function(req, res, next) {
     try {
         const verified = jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
             if (err) {
-                console.log(err);
                 return res.json({
                     success: false,
                     msj: 'Token inválido',
