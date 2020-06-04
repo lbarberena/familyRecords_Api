@@ -170,26 +170,28 @@ router.post('/register', async(req, res) => {
         //Create a new user
         const user = new User({
             username: req.body.username,
+            name: req.body.name,
             email: req.body.email,
             password: hashedPassword,
             family: req.body.family,
             active: req.body.active,
             loggedin: req.body.loggedin,
-            role: req.body.role
+            role: req.body.role,
+            date: req.body.date
         });
 
         try {
             const savedUser = await user.save();
-            res.json({
+            return res.json({
                 success: true,
                 msg: 'Usuario Guardado',
                 data: savedUser
             });
         } catch (err) {
-            res.json({
+            return res.json({
                 success: false,
                 msg: 'Sucedió un error',
-                data: {}
+                data: err
             });
         }
     },
