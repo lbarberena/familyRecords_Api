@@ -75,7 +75,8 @@ router.get('/users/:userId/:userFamily/:family', verify, permissions, (req, res)
         } else if ( (req.params.userFamily !== 'all') && (req.params.family === req.params.userFamily) ) {
             User.aggregate([{
                 $match: {
-                    family: req.params.family
+                    family: req.params.family,
+                    active: 'true'
                 }
             }], function (err, items) {
                 if (err) {
@@ -207,6 +208,7 @@ router.post('/register', async(req, res) => {
 //LOGIN
 
 router.post('/login', async(req, res) => {
+        let conditions = { username: req.body.username };
 
         //Checking if the user exist
         const user = await User.findOne({ username: req.body.username });
@@ -223,6 +225,17 @@ router.post('/login', async(req, res) => {
             msg: "Contraseña incorrecta",
             data: {}
         }).status(400);
+
+        //Checking if the user state is active
+        if (!user.active) return res.json({
+            success: false,
+            msg: "Usuario está desactivado",
+            data: {}
+        }).status(400);
+
+        if (user && user.active) User.updateOne(conditions, { loggedin: true })
+                .then(() => {});
+
 
         //JWT
         const token = jwt.sign({
