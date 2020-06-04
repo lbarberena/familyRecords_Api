@@ -105,7 +105,7 @@ router.get('/users/:userId/:userFamily/:family', verify, permissions, (req, res)
 });
 
 // GET USERS BY ID
-router.get('/users/:userId/:userFamily/:id', verify, permissions, (req, res) => {
+router.get('/users/:userId/:userFamily/id/:id', verify, (req, res) => {
     try {
         const user = User.findById(req.params.id);
         if (!user) {
@@ -115,25 +115,26 @@ router.get('/users/:userId/:userFamily/:id', verify, permissions, (req, res) => 
                 data: {}
             });
         } else {
-            if ( (user.family === req.params.userFamily) || (req.params.userFamily === 'all') ) {
-                User.findById(req.params.id)
-                    .then(thing => {
-                        if (!thing) {
-                            return res.json({
-                                success: false,
-                                msg: 'Datos no encontrados',
-                                data: {}
-                            });
-                        }
+            User.findById(req.params.id)
+                .then(thing => {
+                    if (!thing) {
+                        return res.json({
+                            success: false,
+                            msg: 'Datos no encontrados',
+                            data: {}
+                        });
+                    }
+                    if ( thing && ((thing.family === req.params.userFamily) || (req.params.userFamily === 'all')) ) {
                         return res.json({
                             success: true,
                             msg: 'Solicitado',
                             data: thing
                         });
-                    });
-            } else {
-                res.status(401).json({success: false, msg: "Unauthorized", data: 'No estás autorizado para ver este contenido'});
-            }
+                    } else {
+                        res.status(401).json({success: false, msg: "Unauthorized", data: 'No estás autorizado para ver este contenido'});
+                    }
+                });
+
         }
     } catch (err) {
         return res.json({
@@ -335,6 +336,43 @@ router.put('/password', async(req, res) => {
             data: err
         });
     });
+
+// PUT User
+router.put('/users/:id', async(req, res) => {
+    try {
+        const conditions = { _id: req.params.id };
+
+        //Checking if the user exist
+        const user = await User.findOne({ _id: req.params.id });
+        if (!user) return res.json({
+            success: false,
+            msg: "Usuario no existe",
+            data: {}
+        }).status(400);
+
+        User.updateOne(conditions, req.body)
+            .then(user => {
+                if (!user) {
+                    res.json({
+                        success: false,
+                        msg: 'Usuario no encontrado',
+                        data: {}
+                    });
+                }
+                return res.json({
+                    success: true,
+                    msg: 'Usuario actualizado',
+                    data: user
+                });
+            });
+    } catch (err) {
+        return res.json({
+            success: false,
+            msg: 'Ocurrió un error',
+            data: err
+        });
+    }
+});
 
 // Verify if user exist
 router.post('/user', async(req, res) => {
